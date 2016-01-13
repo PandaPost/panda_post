@@ -48,15 +48,18 @@ DOCS         = $(wildcard doc/*.asc)
 ifeq ($(strip $(DOCS)),)
 DOCS =# Set to NUL so PGXS doesn't puke
 endif
-TESTS        = $(wildcard test/sql/*.sql)
-REGRESS      = $(patsubst test/sql/%.sql,%,$(TESTS))
-REGRESS_OPTS = --inputdir=test --load-language=plpgsql
-#
-# Uncoment the MODULES line if you are adding C files
-# to your extention.
-#
-#MODULES      = $(patsubst %.c,%,$(wildcard src/*.c))
-PG_CONFIG    = pg_config
+
+PG_CONFIG   ?= pg_config
+TESTDIR		?= test
+TESTOUT		?= $(TESTDIR)
+TEST_FILES	+= $(notdir $(wildcard $(TESTDIR)/input/*.source))
+TEST_FILES	+= $(notdir $(wildcard $(TESTDIR)/sql/*.sql))
+REGRESS		 = $(sort $(subst .source,,$(subst .sql,,$(TEST_FILES)))) # Sort is to get unique list
+REGRESS_OPTS = --inputdir=$(TESTDIR) --outputdir=$(TESTOUT) --load-language=plpgsql
+MODULES      = $(patsubst %.c,%,$(wildcard src/*.c))
+ifeq ($(strip $(MODULES)),)
+MODULES =# Set to NUL so PGXS doesn't puke
+endif
 
 EXTRA_CLEAN  = $(wildcard ../$(PGXN)-*.zip) $(EXTENSION_VERSION_FILES)
 
@@ -91,17 +94,6 @@ META.json: META.in.json pgxntool/build_meta.sh
 	pgxntool/build_meta.sh $< $@
 distclean:
 	rm -f META.json
-<<<<<<< HEAD
-#
-# pgtap
-#
-.PHONY: pgtap
-pgtap: $(DESTDIR)$(datadir)/extension/pgtap.control
-
-$(DESTDIR)$(datadir)/extension/pgtap.control:
-	pgxn install pgtap
-=======
->>>>>>> test
 
 #
 # testdeps
@@ -111,17 +103,18 @@ testdeps: pgtap
 
 .PHONY: test
 test: clean testdeps install installcheck
-	@if [ -r regression.diffs ]; then cat regression.diffs; fi
+	@if [ -r $(TESTOUT)/regression.diffs ]; then cat $(TESTOUT)/regression.diffs; fi
 
 .PHONY: results
 results: test
-	rsync -rlpgovP results/ test/expected
+	rsync -rlpgovP $(TESTOUT)/results/ $(TESTDIR)/expected
 
 rmtag:
 	git fetch origin # Update our remotes
 	@test -z "$$(git branch --list $(PGXNVERSION))" || git branch -d $(PGXNVERSION)
 	@test -z "$$(git branch --list -r origin/$(PGXNVERSION))" || git push --delete origin $(PGXNVERSION)
 
+# TODO: Don't puke if tag already exists *and is the same*
 tag:
 	@test -z "$$(git status --porcelain)" || (echo 'Untracked changes!'; echo; git status; exit 1)
 	git branch $(PGXNVERSION)

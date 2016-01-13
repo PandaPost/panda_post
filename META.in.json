@@ -11,13 +11,13 @@
     "X_comment": "I've tried to put things in a logical order. Comments welcome at https://github.com/decibel/pgxntool/issues!",
 
     "X_comment": "REQUIRED. Name of distribution.",
-    "name": "",
+    "name": "EXTENSION NAME",
 
     "X_comment": "REQUIRED. Version of the distribution. http://pgxn.org/spec/#version",
     "version": "0.1.0",
 
     "X_comment": "REQUIRED. Short description of distribution.",
-    "abstract": "",
+    "abstract": "ABSTRACT",
 
     "X_comment": "Optional. \"description\": A longer description of the distribution. http://pgxn.org/spec/#description",
     "description": "",
@@ -41,7 +41,7 @@
             "version": "0.1.0",
 
             "X_comment": "Optional: \"abstract\": Description of the extension.",
-            "abstract": "",
+            "abstract": "ABSTRACT",
 
             "X_comment": "Optional: \"docfile\": filesystem path to document file for extension.",
             "docfile": "",
@@ -66,40 +66,26 @@
         }
     },
 
-    "X_comment": "Optional. \"prereqs\": Prerequisits for the distribution. http://pgxn.org/spec/#prereqs",
+    "X_comment": "Optional. 'prereqs': Prerequisits for the distribution. http://pgxn.org/spec/#prereqs",
+    "X_comment": "Valid keys for 'prereqs' are configure, build, runtime, or test.",
+    "X_comment": "Valid keys for 'requires' are requires, recommends, suggests, or conflicts.",
     "prereqs": {
-        "X_comment": "Valid keys are configure, build, runtime, or test.",
 
         "build": {
-            "X_comment": "Valid keys are requires, recommends, suggests, or conflicts.",
             "requires": {
-                "PostgreSQL": "9.5.0",
-
-                "X_end": ""
-            },
-
-            "X_end": ""
+                "PostgreSQL": "9.5.0"
+            }
         },
         "runtime": {
             "requires": {
-                "plpgsql": 0,
-
-                "X_end": ""
-            },
-
-            "X_end": ""
+                "plpgsql": 0
+            }
         },
         "test": {
             "requires": {
-                "pgtap": 0,
-
-                "X_end": ""
-            },
-
-            "X_end": ""
-        },
-
-        "X_end": ""
+                "pgtap": 0
+            }
+        }
     },
 
     "X_comment": "Unusual. \"no_index\": Files/directories that should not be indexed. http://pgxn.org/spec/#no_index",

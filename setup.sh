@@ -41,11 +41,11 @@ git add META.json
 mkdir -p sql test src
 
 cd test
-safecreate deps.sql '-- Add any test dependency statements here'
+safecp ../pgxntool/test/deps.sql deps.sql
 [ -d pgxntool ] || ln -s ../pgxntool/test/pgxntool .
 git add pgxntool
 
-echo "If you won't be creating C code then you should:
+echo "If you won't be creating C code then you can:
 
 rmdir src
 
