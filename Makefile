@@ -1,7 +1,5 @@
-$(info $(LDFLAGS))
-
 #override MODULES :=# Unset
-EXTENSION = pg_ndarray
+EXTENSION = PandaPost
 MODULEDIR = $(EXTENSION)
 MODULE_big = $(EXTENSION)
 
@@ -29,7 +27,5 @@ endif
 override CPPFLAGS := $(python_includespec) -I$(numpy_include) $(CPPFLAGS)
 SHLIB_LINK = $(python_libspec) $(python_additional_libs) $(filter -lintl,$(LIBS))
 LDFLAGS += -L/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
-
-$(info $(LDFLAGS) 2)
 
 # vi: noexpandtab

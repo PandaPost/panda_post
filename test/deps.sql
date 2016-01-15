@@ -3,4 +3,4 @@ CREATE SCHEMA IF NOT EXISTS tap;
 CREATE EXTENSION pgtap SCHEMA tap;
 
 -- Add any test dependency statements here
-CREATE EXTENSION pg_ndarray;
+CREATE EXTENSION PandaPost;

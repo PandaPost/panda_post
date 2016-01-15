@@ -3,6 +3,7 @@
 \i test/pgxntool/psql.sql
 
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS plpythonu;
 
 \i sql/PandaPost.sql
 
