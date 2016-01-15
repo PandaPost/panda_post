@@ -1,12 +1,4 @@
-#override MODULES :=# Unset
 EXTENSION = PandaPost
-MODULEDIR = $(EXTENSION)
-MODULE_big = $(EXTENSION)
-
-SRC_C = $(wildcard src/*.c)
-SRC_H = $(wildcard src/*.h)
-SRCFILES = $(SRC_C) $(SRC_H)
-OBJS = $(patsubst %.c,%.o,$(SRC_C))
 
 include pgxntool/base.mk
 
@@ -25,7 +17,6 @@ $(error could not determine numpy include path)
 endif
 
 override CPPFLAGS := $(python_includespec) -I$(numpy_include) $(CPPFLAGS)
-SHLIB_LINK = $(python_libspec) $(python_additional_libs) $(filter -lintl,$(LIBS))
 LDFLAGS += -L/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/config -lpython2.7 -ldl -framework CoreFoundation
 
 # vi: noexpandtab
