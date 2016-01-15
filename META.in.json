@@ -11,7 +11,7 @@
     "X_comment": "I've tried to put things in a logical order. Comments welcome at https://github.com/decibel/pgxntool/issues!",
 
     "X_comment": "REQUIRED. Name of distribution.",
-    "name": "pg_ndarray",
+    "name": "PandaPost",
 
     "X_comment": "REQUIRED. Version of the distribution. http://pgxn.org/spec/#version",
     "version": "0.1.0",
@@ -33,9 +33,9 @@
 
     "X_comment": "REQUIRED. Specifies extensions contained in this distribution. Each key is the name of an extension. http://pgxn.org/spec/#provides",
     "provides": {
-        "pg_ndarray": {
+        "PandaPost": {
             "X_comment": "REQUIRED. File containing extension.",
-            "file": "sql/pg_ndarray.sql",
+            "file": "sql/PandaPost.sql",
 
             "X_comment": "REQUIRED. Version the extension is at.",
             "version": "0.1.0",
@@ -55,13 +55,13 @@
 
     "X_comment": "Optional. \"resources\": Web resources available for this distribution. http://pgxn.org/spec/#resources",
     "resources": {
-        "homepage": "http://github.com/decibel/pg_ndarray",
+        "homepage": "http://github.com/decibel/PandaPost",
         "bugtracker": {
-            "web": "http://github.com/decibel/pg_ndarray/issues"
+            "web": "http://github.com/decibel/PandaPost/issues"
         },
         "repository": {
-            "url": "git://github.com/decibel/pg_ndarray.git",
-            "web": "http://github.com/decibel/pg_ndarray/",
+            "url": "git://github.com/decibel/PandaPost.git",
+            "web": "http://github.com/decibel/PandaPost/",
             "type": "git"
         }
     },

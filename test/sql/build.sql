@@ -4,7 +4,7 @@
 
 BEGIN;
 
-\i sql/pg_ndarray.sql
+\i sql/PandaPost.sql
 
 \echo # TRANSACTION INTENTIONALLY LEFT OPEN!
 
