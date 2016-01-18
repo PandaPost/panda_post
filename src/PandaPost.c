@@ -10,6 +10,8 @@
 
 #include "plpython.h"
 
+#include "plpy_typeio.h"
+
 // #include "numpy/ndarrayobject.h"
 
 PG_MODULE_MAGIC;
@@ -25,6 +27,7 @@ PLyNdarray_FromDatum(PG_FUNCTION_ARGS)
   uint8_t     version;
   static PyObject *unpickle;
   PyObject   *pyvalue;
+  PyObject *b;
 
   /* First byte is a verision number */
   version = *str;
@@ -46,6 +49,7 @@ PLyNdarray_FromDatum(PG_FUNCTION_ARGS)
       elog(ERROR, "could not import a module for unpickling");
 
     unpickle = PyObject_GetAttrString(pickle_module, "loads");
+    // This can probably go away
     if (!unpickle)
       elog(ERROR, "no loads attribute in module");
   }
@@ -57,9 +61,8 @@ PLyNdarray_FromDatum(PG_FUNCTION_ARGS)
        * TODO: Avoid copying the string 2x 
        * http://stackoverflow.com/questions/25067790/create-pystring-from-c-character-array-without-copying
        */
-      pyvalue = PyObject_CallFunction(unpickle, "s", PyBytes_FromStringAndSize(str, size) );
-      if (!pyvalue)
-          elog(ERROR, "unpickling failed");
+      b = PyBytes_FromStringAndSize(str, size);
+      pyvalue = PyObject_CallFunction(unpickle, "s", PyBytes_AsString(b));
       break;
     default:
       elog(ERROR, "unsupported ndarray storage version %u", version);
@@ -116,7 +119,7 @@ PLyObject_To_ndarray(PG_FUNCTION_ARGS)
   {
     char     *plrv_sc = PyBytes_AsString(pyvalue);
     size_t    len = PyBytes_Size(pyvalue);
-    size_t    size = len + VARHDRSZ +1;
+    size_t    size = len + VARHDRSZ + 1;
     bytea     *result = palloc(size);
 
     SET_VARSIZE(result, size);
