@@ -10,8 +10,6 @@
 
 #include "plpython.h"
 
-#include "plpy_typeio.h"
-
 // #include "numpy/ndarrayobject.h"
 
 PG_MODULE_MAGIC;
@@ -142,4 +140,4 @@ PLyObject_To_ndarray(PG_FUNCTION_ARGS)
   return rv;
 }
 
-/* vi: expandtab ts=2 sw=2 */
+// vi: expandtab ts=2 sw=2
