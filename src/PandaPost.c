@@ -54,7 +54,7 @@ PLyNdarray_FromDatum(PG_FUNCTION_ARGS)
 
   switch (version)
   {
-    case 1:
+    case 0:
       /*
        * TODO: Avoid copying the string 2x 
        * http://stackoverflow.com/questions/25067790/create-pystring-from-c-character-array-without-copying
@@ -107,6 +107,7 @@ PLyObject_To_ndarray(PG_FUNCTION_ARGS)
         elog(ERROR, "no dumps attribute in module");
     }
 
+    // TODO: change pickle version to -1
 
     pyvalue = PyObject_CallFunction(pickle, "O", pyndarray);
 
@@ -123,7 +124,7 @@ PLyObject_To_ndarray(PG_FUNCTION_ARGS)
     SET_VARSIZE(result, size);
 
     /* Store version number in first byte */
-    *VARDATA(result) = (uint8_t) 1;
+    *VARDATA(result) = (uint8_t) 0;
 
     memcpy(VARDATA(result) + 1, plrv_sc, len);
     rv = PointerGetDatum(result);
