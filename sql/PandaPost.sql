@@ -24,3 +24,14 @@ CREATE TRANSFORM FOR ndarray LANGUAGE plpythonu(
     FROM SQL WITH FUNCTION ndarray_to_plpython(internal)
     , TO SQL WITH FUNCTION ndarray_from_plpython(internal)
 );
+
+CREATE FUNCTION repr(
+    i ndarray
+) RETURNS text LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy
+
+return repr(i)
+$body$;
+
