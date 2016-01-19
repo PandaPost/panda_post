@@ -43,7 +43,7 @@ $(foreach ext,$(EXTENSIONS),$(eval $(call extension--version_rule,$(ext)))): MET
 # TODO: Add support for creating .control files
 #$(foreach ext,$(EXTENSIONS),$(info $(call extension--version_rule,$(ext))))
 
-DATA         = $(filter-out $(wildcard sql/*-*-*.sql),$(wildcard sql/*.sql))
+DATA         = $(EXTENSION_VERSION_FILES)
 DOCS         = $(wildcard doc/*.asc)
 ifeq ($(strip $(DOCS)),)
 DOCS =# Set to NUL so PGXS doesn't puke
@@ -75,7 +75,7 @@ GE91		 = $(call test, $(MAJORVER), -ge, 91)
 ifeq ($(GE91),yes)
 all: $(EXTENSION_VERSION_FILES)
 
-DATA = $(wildcard sql/*--*.sql)
+#DATA = $(wildcard sql/*--*.sql)
 endif
 
 PGXS := $(shell $(PG_CONFIG) --pgxs)
@@ -140,7 +140,8 @@ list:
 	sh -c "$(MAKE) -p no_targets__ | awk -F':' '/^[a-zA-Z0-9][^\$$#\/\\t=]*:([^=]|$$)/ {split(\$$1,A,/ /);for(i in A)print A[i]}' | grep -v '__\$$' | sort"
 
 # To use this, do make print-VARIABLE_NAME
-print-%	: ; $(info $* is $(flavor ${$*}) variable set to [${$*}])@echo -n
+print-%	: ; $(info $* is $(flavor $*) variable set to "$($*)") @true
+
 
 #
 # subtree sync support
@@ -150,12 +151,14 @@ print-%	: ; $(info $* is $(flavor ${$*}) variable set to [${$*}])@echo -n
 .PHONY: pgxn-sync-%
 pgxntool-sync-%:
 	git subtree pull -P pgxntool --squash -m "Pull pgxntool from $($@)" $($@)
-
-pgxntool-sync-release	:= git@github.com:decibel/pgxntool.git release
-pgxntool-sync-local		:= ../pgxntool release
-# NOTE! If you pull anything other than release you're likely to get a bunch of
-# stuff you don't want in your history!
 pgxntool-sync: pgxntool-sync-release
+
+# DANGER! Use these with caution. They may add extra crap to your history and
+# could make resolving merges difficult!
+pgxntool-sync-release	:= git@github.com:decibel/pgxntool.git release
+pgxntool-sync-stable	:= git@github.com:decibel/pgxntool.git stable
+pgxntool-sync-local		:= ../pgxntool release
+pgxntool-sync-local-stable	:= ../pgxntool stable
 
 ifndef PGXNTOOL_NO_PGXS_INCLUDE
 include $(PGXS)
