@@ -3,7 +3,6 @@ psql:test/pgxntool/tap_setup.sql:3: NOTICE:  42P06: schema "tap" already exists,
 LOCATION:  CreateSchemaCommand, schemacmds.c:115
 psql:test/pgxntool/tap_setup.sql:5: NOTICE:  42710: extension "pgtap" already exists, skipping
 LOCATION:  CreateExtension, extension.c:1535
-1..2
-ok 1 - Create temp table
-ok 2
+1..1
+ok 1 - Can represent a dataframe in an ndarray
 # TRANSACTION INTENTIONALLY LEFT OPEN!
