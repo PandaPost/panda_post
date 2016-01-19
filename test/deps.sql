@@ -4,4 +4,5 @@ CREATE EXTENSION IF NOT EXISTS pgtap SCHEMA tap;
 
 -- Add any test dependency statements here
 CREATE EXTENSION IF NOT EXISTS plpythonu;
+CREATE EXTENSION IF NOT EXISTS lambda;
 CREATE EXTENSION PandaPost;

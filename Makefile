@@ -2,6 +2,14 @@ EXTENSION = PandaPost
 
 include pgxntool/base.mk
 
+# Tests require the lambda extension
+.PHONY: lambda
+lambda: $(DESTDIR)$(datadir)/extension/lambda.control
+
+$(DESTDIR)$(datadir)/extension/lambda.control:
+	pgxn install lambda
+testdeps: lambda
+
 define get_numpy_include
 from numpy.lib.utils import get_include
 print get_include()

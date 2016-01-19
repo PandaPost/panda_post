@@ -97,6 +97,7 @@
         "test": {
             "requires": {
                 "pgtap": 0,
+                "lambda": 0,
 
                 "X_end": ""
             },

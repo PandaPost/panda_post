@@ -85,12 +85,18 @@
 
                 "X_end": ""
             },
+            "recommends": {
+                "lambda": 0,
+
+                "X_end":""
+            },
 
             "X_end": ""
         },
         "test": {
             "requires": {
                 "pgtap": 0,
+                "lambda": 0,
 
                 "X_end": ""
             },
