@@ -2,16 +2,6 @@
 
 \i test/pgxntool/setup.sql
 
-CREATE FUNCTION pg_temp.nd_as_intarray(
-  i ndarray
-) RETURNS int[]
-TRANSFORM FOR TYPE ndarray
-LANGUAGE plpythonu AS $body$
-  import numpy as np
-
-  return i.tolist()
-$body$;
-
 CREATE TEMP TABLE nd(
   nd ndarray
 );
