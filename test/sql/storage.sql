@@ -2,14 +2,6 @@
 
 \i test/pgxntool/setup.sql
 
-CREATE FUNCTION pg_temp.test_value(
-) RETURNS ndarray
-TRANSFORM FOR TYPE ndarray
-LANGUAGE plpythonu IMMUTABLE AS $body$
-  import numpy as np
-
-  return np.array([1,2,3,444]) # 444 is big enough to test endianness
-$body$;
 CREATE FUNCTION pg_temp.nd_as_intarray(
   i ndarray
 ) RETURNS int[]
