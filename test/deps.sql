@@ -9,12 +9,18 @@ CREATE EXTENSION PandaPost;
 
 -- General test infrastructure (should maybe be in it's own file)
 CREATE FUNCTION pg_temp.test_value(
+  version int DEFAULT 1
 ) RETURNS ndarray
 TRANSFORM FOR TYPE ndarray
 LANGUAGE plpythonu IMMUTABLE AS $body$
   import numpy as np
 
-  return np.array([1,2,3,444]) # 444 is big enough to test endianness
+  out = {
+    1: [1,2,3,444],
+    3: [2,2,3,3,3],
+    2: [1,2,2,3,3,3],
+  }
+  return np.array(out[version]) # 444 is big enough to test endianness
 $body$;
 
 CREATE FUNCTION pg_temp.nd_as_intarray(
