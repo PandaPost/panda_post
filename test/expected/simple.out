@@ -1,8 +1,50 @@
 \set ECHO none
-psql:test/pgxntool/tap_setup.sql:3: NOTICE:  42P06: schema "tap" already exists, skipping
-LOCATION:  CreateSchemaCommand, schemacmds.c:115
-psql:test/pgxntool/tap_setup.sql:5: NOTICE:  42710: extension "pgtap" already exists, skipping
-LOCATION:  CreateExtension, extension.c:1535
-1..1
-ok 1 - Can represent a dataframe in an ndarray
+1..47
+ok 1 - Simple test of str
+ok 2 - Test str(eval(repr(n))) = str(ndarray)
+ok 3 - str() output of boolean[]::ndarray
+ok 4 - Cast boolean[] to ndarray and back
+ok 5 - Test str(eval(repr(n))) = str(ndarray)
+ok 6 - str() output of boolean::ndarray
+ok 7 - Cast boolean to ndarray and back
+ok 8 - Test str(eval(repr(n))) = str(ndarray)
+ok 9 - str() output of smallint[]::ndarray
+ok 10 - Cast smallint[] to ndarray and back
+ok 11 - Test str(eval(repr(n))) = str(ndarray)
+ok 12 - str() output of smallint::ndarray
+ok 13 - Cast smallint to ndarray and back
+ok 14 - Test str(eval(repr(n))) = str(ndarray)
+ok 15 - str() output of integer[]::ndarray
+ok 16 - Cast integer[] to ndarray and back
+ok 17 - Test str(eval(repr(n))) = str(ndarray)
+ok 18 - str() output of integer::ndarray
+ok 19 - Cast integer to ndarray and back
+ok 20 - Test str(eval(repr(n))) = str(ndarray)
+ok 21 - str() output of bigint[]::ndarray
+ok 22 - Cast bigint[] to ndarray and back
+ok 23 - Test str(eval(repr(n))) = str(ndarray)
+ok 24 - str() output of bigint::ndarray
+ok 25 - Cast bigint to ndarray and back
+ok 26 - Test str(eval(repr(n))) = str(ndarray)
+ok 27 - str() output of real[]::ndarray
+ok 28 - Cast real[] to ndarray and back
+ok 29 - Test str(eval(repr(n))) = str(ndarray)
+ok 30 - str() output of real::ndarray
+ok 31 - Cast real to ndarray and back
+ok 32 - Test str(eval(repr(n))) = str(ndarray)
+ok 33 - str() output of double precision[]::ndarray
+ok 34 - Cast double precision[] to ndarray and back
+ok 35 - Test str(eval(repr(n))) = str(ndarray)
+ok 36 - str() output of double precision::ndarray
+ok 37 - Cast double precision to ndarray and back
+ok 38 - str() output of numeric[]::ndarray
+ok 39 - Cast numeric[] to ndarray and back
+ok 40 - str() output of numeric::ndarray
+ok 41 - Cast numeric to ndarray and back
+ok 42 - Test str(eval(repr(n))) = str(ndarray)
+ok 43 - str() output of text[]::ndarray
+ok 44 - Cast text[] to ndarray and back
+ok 45 - Test str(eval(repr(n))) = str(ndarray)
+ok 46 - str() output of text::ndarray
+ok 47 - Cast text to ndarray and back
 # TRANSACTION INTENTIONALLY LEFT OPEN!

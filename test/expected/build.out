@@ -1,2 +1,14 @@
 \set ECHO none
+ create_cast 
+-------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(8 rows)
+
 # TRANSACTION INTENTIONALLY LEFT OPEN!

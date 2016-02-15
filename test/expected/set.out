@@ -1,0 +1,5 @@
+\set ECHO none
+1..2
+ok 1 - ediff1d(test value)
+ok 2 - ediff1d(test value, 0, 99)
+# TRANSACTION INTENTIONALLY LEFT OPEN!

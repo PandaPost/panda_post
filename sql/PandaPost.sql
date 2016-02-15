@@ -25,12 +25,217 @@ CREATE TRANSFORM FOR ndarray LANGUAGE plpythonu(
   , TO SQL WITH FUNCTION ndarray_from_plpython(internal)
 );
 
-CREATE FUNCTION repr(
-  i ndarray
-) RETURNS text LANGUAGE sql STRICT IMMUTABLE
-AS $body$
-import numpy
+CREATE FUNCTION create_cast(
+  data_type text
+  , transform text DEFAULT ''
+  , cast_type text DEFAULT NULL
+  , create_array_cast boolean DEFAULT true
+) RETURNS void LANGUAGE plpgsql AS $body$
+DECLARE
+  c_regtype CONSTANT regtype := data_type;
+  -- plpython creates a python function named after the PG function, so we can't have spaces
+  c_clean_type CONSTANT text := replace( data_type, ' ', '_' );
+  c_cast_type CONSTANT text := coalesce( 'AS ' || cast_type, '' );
 
-return repr(i)
+  -- ERROR FORMAT
+  c_error_fmt CONSTANT text := format(
+$fmt$
+if i.ndim > 0:
+  raise plpy.Error('Can not cast ndarray with more than one element to %1$s')
+$fmt$
+    , data_type
+  );
+
+  -- TO FORMAT
+  c_to_fmt CONSTANT text := $fmt$
+CREATE FUNCTION ndarray_to_%1$s%7$s(
+  i ndarray
+) RETURNS %8$s%2$s LANGUAGE plpythonu IMMUTABLE STRICT
+TRANSFORM FOR TYPE ndarray
+%3$s
+AS $func$
+import numpy as np
+%5$s
+return i%6$s
+$func$;
+CREATE CAST (ndarray AS %8$s%2$s) WITH FUNCTION ndarray_to_%1$s%7$s(ndarray) %4$s;
+$fmt$;
+
+  -- FROM FORMAT
+  c_from_fmt CONSTANT text := $fmt$
+CREATE FUNCTION ndarray_from_%1$s(
+  i %5$s%2$s
+) RETURNS ndarray LANGUAGE plpythonu IMMUTABLE STRICT
+TRANSFORM FOR TYPE ndarray
+%3$s
+AS $func$
+import numpy as np
+# i is already a copy and the return will also be copied. No sense in a 3rd copy.
+return np.array(i, copy=False)
+$func$;
+CREATE CAST (%5$s%2$s AS ndarray) WITH FUNCTION ndarray_from_%1$s(%5$s%2$s) %4$s;
+$fmt$;
+BEGIN
+  -- FROM
+  EXECUTE format(
+    c_from_fmt
+    , c_clean_type
+    , '' -- Not array
+    , transform
+    , c_cast_type
+    , c_regtype
+  );
+
+  -- TO
+  EXECUTE format(
+    c_to_fmt
+    , c_clean_type
+    , '' -- Not array
+    , transform
+    , c_cast_type
+    , c_error_fmt -- Error on len(ndarray)>1
+    , '' -- Return only first element
+    , '' -- No function name decorator
+    , c_regtype
+  );
+
+  /*
+   * Array versions
+   */
+  IF create_array_cast THEN
+    -- FROM
+    EXECUTE format(
+      c_from_fmt
+      , c_clean_type
+      , '[]' -- Array
+      , transform
+      , c_cast_type
+      , c_regtype::text || '[]'
+    );
+
+    -- TO
+    EXECUTE format(
+      c_to_fmt
+      , c_clean_type
+      , '[]' -- Array
+      , transform
+      , c_cast_type
+      , '' -- No error on len(ndarray)>1
+      , '.tolist()' -- Return all elements
+      , '_array' -- Function name decorator
+      , c_regtype::text || '[]'
+    );
+  END IF;
+END
 $body$;
 
+/*
+ * Create casts for all standard pythonu supported types
+ */
+SELECT create_cast(t) FROM unnest('{boolean,smallint,int,bigint,float,real,numeric,text}'::text[]) t;
+
+CREATE FUNCTION repr(
+  i ndarray
+) RETURNS text LANGUAGE plpythonu STRICT IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy
+return repr(i)
+$body$;
+CREATE FUNCTION repr(
+  i ndarray[]
+) RETURNS text[] LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy
+return map(repr,i)
+$body$;
+CREATE FUNCTION str(
+  i ndarray
+) RETURNS text LANGUAGE plpythonu STRICT IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy
+return str(i)
+$body$;
+CREATE FUNCTION str(
+  i ndarray[]
+) RETURNS text[] LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy
+return map(str,i)
+$body$;
+CREATE FUNCTION eval(
+  i text
+) RETURNS ndarray LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+# i is already a copy and the return will also be copied. No sense in a 3rd copy.
+return np.array(eval(i), copy=False)
+$body$;
+
+
+CREATE FUNCTION ediff1d(
+  ary ndarray
+  , to_end ndarray = NULL
+  , to_begin ndarray = NULL
+) RETURNS ndarray LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+
+return np.ediff1d(ary, to_end, to_begin)
+$body$;
+
+-- Unique is a reserved word, so need to modify it anyway...
+CREATE FUNCTION ndunique(
+  ar ndarray
+  , return_index boolean = False
+  , return_inverse boolean = False
+  , return_counts boolean = False
+) RETURNS ndarray[] LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+
+if return_index or return_inverse or return_counts:
+  return np.unique(ar, return_index, return_inverse, return_counts)
+else:
+  # Need to do this to ensure we always return an array
+  return (np.unique(ar),)
+$body$;
+CREATE FUNCTION ndunique1(
+  ar ndarray
+) RETURNS ndarray LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+
+return np.unique(ar)
+$body$;
+COMMENT ON FUNCTION ndunique1(
+  ar ndarray
+) IS $$Version of ndarray.unique() that returns just the nd array$$;
+
+CREATE FUNCTION intersect1d(
+  ar1 ndarray
+  , ar2 ndarray
+  , assume_unique boolean = False
+) RETURNS ndarray LANGUAGE plpythonu IMMUTABLE
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+
+return np.intersect1d(ar1, ar2, assume_unique)
+$body$;
+
+/*
+setxor1d(ar1, ar2, assume_unique=False)
+in1d(ar1, ar2, assume_unique=False, invert=False)
+union1d(ar1, ar2)
+setdiff1d(ar1, ar2, assume_unique=False)
+*/
+
+-- vi: expandtab ts=2 sw=2
