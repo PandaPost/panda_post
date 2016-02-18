@@ -142,14 +142,6 @@ AS $body$
 import numpy
 return repr(i)
 $body$;
-CREATE FUNCTION repr(
-  i ndarray[]
-) RETURNS text[] LANGUAGE plpythonu IMMUTABLE
-TRANSFORM FOR TYPE ndarray
-AS $body$
-import numpy
-return map(repr,i)
-$body$;
 CREATE FUNCTION str(
   i ndarray
 ) RETURNS text LANGUAGE plpythonu STRICT IMMUTABLE
@@ -157,14 +149,6 @@ TRANSFORM FOR TYPE ndarray
 AS $body$
 import numpy
 return str(i)
-$body$;
-CREATE FUNCTION str(
-  i ndarray[]
-) RETURNS text[] LANGUAGE plpythonu IMMUTABLE
-TRANSFORM FOR TYPE ndarray
-AS $body$
-import numpy
-return map(str,i)
 $body$;
 CREATE FUNCTION eval(
   i text
