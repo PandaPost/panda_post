@@ -6,7 +6,7 @@ SELECT plan(
   1 -- T
 );
 
--- ediff1d
+-- T
 SELECT is(
     str("T"(eval('[[1,2],[3,4]]')))
     , '[[1 3]
