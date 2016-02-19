@@ -138,6 +138,7 @@ CREATE FUNCTION pg_temp.cf(
   fname text
   , extra_args text DEFAULT NULL
   , options text DEFAULT 'IMMUTABLE'
+  , attribute boolean DEFAULT false
 ) RETURNS void LANGUAGE plpgsql AS $cf_body$
 DECLARE
   template CONSTANT text := $template$
@@ -146,7 +147,7 @@ DECLARE
  * 1: function name
  * 2: extra argument specifications
  * 3: function options
- * 4: python argument names
+ * 4: return clause
  */
 CREATE FUNCTION %1$I(
   i ndarray
@@ -154,7 +155,7 @@ CREATE FUNCTION %1$I(
 TRANSFORM FOR TYPE ndarray
 AS $body$
 import numpy as np
-return np.%1$s(%4$s)
+return %4$s
 $body$;
 $template$;
 
@@ -200,12 +201,27 @@ BEGIN
     , fname
     , extra_args
     , options
-    , input_arg_names
+
+    -- Return clause
+    , CASE WHEN attribute THEN
+        $$i.$$ || fname
+      ELSE
+        format(
+          $$np.%1$s(%2$s)$$
+          , fname
+          , input_arg_names
+        )
+      END
   );
   RAISE DEBUG 'Executing SQL %', sql;
   EXECUTE sql;
 END
 $cf_body$;
+
+SELECT pg_temp.cf(
+  'T'
+  , attribute := true
+);
 
 CREATE FUNCTION repr(
   i ndarray
