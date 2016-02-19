@@ -244,7 +244,6 @@ SELECT pg_temp.cf(
   'intersect1d'
   , $$
   , ar2 ndarray
-  , assume_unique boolean = False
 $$);
 
 /*

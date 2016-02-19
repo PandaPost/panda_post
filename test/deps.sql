@@ -13,8 +13,8 @@ LANGUAGE plpythonu IMMUTABLE AS $body$
 
   out = {
     1: [1,2,3,444],
-    3: [2,2,3,3,3],
-    2: [1,2,2,3,3,3],
+    2: [2,2,3,3,3],
+    3: [1,2,2,3,3,3],
   }
   return np.array(out[version]) # 444 is big enough to test endianness
 $body$;
