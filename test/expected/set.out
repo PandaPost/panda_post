@@ -1,7 +1,12 @@
 \set ECHO none
-1..4
+1..9
 ok 1 - ediff1d(test value)
 ok 2 - ediff1d(test value, 0, 99)
 ok 3 - intersect1d()
 ok 4 - intersect1d() with duped values
+ok 5 - setxor1d()
+ok 6 - union1d()
+ok 7 - setdiff1d()
+ok 8 - in1d()
+ok 9 - in1d(invert=true)
 # TRANSACTION INTENTIONALLY LEFT OPEN!

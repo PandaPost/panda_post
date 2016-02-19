@@ -240,19 +240,23 @@ SELECT pg_temp.cf(
   , to_begin ndarray = NULL
 $$);
 --SET client_min_messages=debug;
-SELECT pg_temp.cf(
-  'intersect1d'
-  , $$
-  , ar2 ndarray
-$$);
-
 /*
 setxor1d(ar1, ar2, assume_unique=False)
 in1d(ar1, ar2, assume_unique=False, invert=False)
 union1d(ar1, ar2)
 setdiff1d(ar1, ar2, assume_unique=False)
 */
-
+-- All of these also accept assume_unique, but it seems pointless to support that
+SELECT pg_temp.cf( u, ', ar2 ndarray' ) FROM unnest(
+  '{intersect1d,setxor1d,union1d,setdiff1d}'::text[]
+) u;
+SELECT pg_temp.cf(
+  'in1d'
+  , $$
+  , ar2 ndarray
+  , assume_unique boolean = False -- Include this only here preserve it's position
+  , invert boolean = False
+$$);
 
 /*
  * Can't use generic template for unique
