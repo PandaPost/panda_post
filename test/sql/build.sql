@@ -5,6 +5,8 @@
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS plpythonu;
 
+-- Tuple-only because of multiple calls to functions
+\t
 \i sql/PandaPost.sql
 
 \echo # TRANSACTION INTENTIONALLY LEFT OPEN!

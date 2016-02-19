@@ -134,6 +134,79 @@ $body$;
  */
 SELECT create_cast(t) FROM unnest('{boolean,smallint,int,bigint,float,real,numeric,text}'::text[]) t;
 
+CREATE FUNCTION pg_temp.cf(
+  fname text
+  , extra_args text DEFAULT NULL
+  , options text DEFAULT 'IMMUTABLE'
+) RETURNS void LANGUAGE plpgsql AS $cf_body$
+DECLARE
+  template CONSTANT text := $template$
+/*
+ * format() args:
+ * 1: function name
+ * 2: extra argument specifications
+ * 3: function options
+ * 4: python argument names
+ */
+CREATE FUNCTION %1$I(
+  i ndarray
+%2$s) RETURNS ndarray LANGUAGE plpythonu %3$s
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+return np.%1$s(%4$s)
+$body$;
+$template$;
+
+  temp_proc regprocedure;
+  input_arg_names text;
+  input_arg_types text;
+  sql text;
+BEGIN
+  -- Get names of extra args by creating a temp function
+  IF extra_args IS NOT NULL THEN
+    sql := format(
+      $fmt$CREATE FUNCTION pg_temp.nd_array_get_function_argument_names(
+        i ndarray -- Must match template!!!
+        %s
+      ) RETURNS int LANGUAGE sql AS 'SELECT 1'
+      $fmt$
+      , extra_args
+    );
+    --RAISE DEBUG 'Executing SQL %', sql;
+    EXECUTE sql;
+
+    /*
+     * Get new OID. *This must be done dynamically!* Otherwise we get stuck
+     * with a CONST oid after first compilation.
+     */
+    EXECUTE $$SELECT 'pg_temp.nd_array_get_function_argument_names'::regproc::regprocedure$$ INTO temp_proc;
+    SELECT
+        array_to_string( proargnames, ', ' )
+        , array_to_string( proargtypes::regtype[], ', ' )
+      INTO STRICT input_arg_names, input_arg_types
+      FROM pg_proc
+      WHERE oid = temp_proc
+    ;
+    -- NOTE: DROP may not accept all the argument options that CREATE does, so use temp_proc
+    EXECUTE format(
+      $fmt$DROP FUNCTION %s$fmt$
+      , temp_proc
+    );
+  END IF;
+
+  sql := format(
+    template
+    , fname
+    , extra_args
+    , options
+    , input_arg_names
+  );
+  RAISE DEBUG 'Executing SQL %', sql;
+  EXECUTE sql;
+END
+$cf_body$;
+
 CREATE FUNCTION repr(
   i ndarray
 ) RETURNS text LANGUAGE plpythonu STRICT IMMUTABLE
@@ -160,19 +233,31 @@ import numpy as np
 return np.array(eval(i), copy=False)
 $body$;
 
-
-CREATE FUNCTION ediff1d(
-  ary ndarray
+SELECT pg_temp.cf(
+  'ediff1d'
+  , $$
   , to_end ndarray = NULL
   , to_begin ndarray = NULL
-) RETURNS ndarray LANGUAGE plpythonu IMMUTABLE
-TRANSFORM FOR TYPE ndarray
-AS $body$
-import numpy as np
+$$);
+--SET client_min_messages=debug;
+SELECT pg_temp.cf(
+  'intersect1d'
+  , $$
+  , ar2 ndarray
+  , assume_unique boolean = False
+$$);
 
-return np.ediff1d(ary, to_end, to_begin)
-$body$;
+/*
+setxor1d(ar1, ar2, assume_unique=False)
+in1d(ar1, ar2, assume_unique=False, invert=False)
+union1d(ar1, ar2)
+setdiff1d(ar1, ar2, assume_unique=False)
+*/
 
+
+/*
+ * Can't use generic template for unique
+ */
 -- Unique is a reserved word, so need to modify it anyway...
 CREATE FUNCTION ndunique(
   ar ndarray
@@ -202,24 +287,5 @@ $body$;
 COMMENT ON FUNCTION ndunique1(
   ar ndarray
 ) IS $$Version of ndarray.unique() that returns just the nd array$$;
-
-CREATE FUNCTION intersect1d(
-  ar1 ndarray
-  , ar2 ndarray
-  , assume_unique boolean = False
-) RETURNS ndarray LANGUAGE plpythonu IMMUTABLE
-TRANSFORM FOR TYPE ndarray
-AS $body$
-import numpy as np
-
-return np.intersect1d(ar1, ar2, assume_unique)
-$body$;
-
-/*
-setxor1d(ar1, ar2, assume_unique=False)
-in1d(ar1, ar2, assume_unique=False, invert=False)
-union1d(ar1, ar2)
-setdiff1d(ar1, ar2, assume_unique=False)
-*/
 
 -- vi: expandtab ts=2 sw=2
