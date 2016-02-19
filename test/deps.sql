@@ -19,14 +19,4 @@ LANGUAGE plpythonu IMMUTABLE AS $body$
   return np.array(out[version]) # 444 is big enough to test endianness
 $body$;
 
-CREATE FUNCTION pg_temp.nd_as_intarray(
-  i ndarray
-) RETURNS int[]
-TRANSFORM FOR TYPE ndarray
-LANGUAGE plpythonu AS $body$
-  import numpy as np
-
-  return i.tolist()
-$body$;
-
 -- vi: expandtab sw=2 ts=2

@@ -8,12 +8,12 @@ SELECT plan(
 );
 
 SELECT is(
-    pg_temp.nd_as_intarray(ediff1d(pg_temp.test_value()))
+    ediff1d(pg_temp.test_value())::int[]
     , array[1,1,441]
     , 'ediff1d(test value)'
 );
 SELECT is(
-    pg_temp.nd_as_intarray(ediff1d(pg_temp.test_value(),0::ndarray,99::ndarray))
+    ediff1d(pg_temp.test_value(),0::ndarray,99::ndarray)::int[]
     , array[99,1,1,441,0]
     , 'ediff1d(test value, 0, 99)'
 );

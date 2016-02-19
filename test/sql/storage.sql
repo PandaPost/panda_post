@@ -10,7 +10,7 @@ INSERT INTO nd SELECT pg_temp.test_value();
 
 SELECT * FROM nd;
 
-SELECT pg_temp.nd_as_intarray(nd) FROM nd;
+SELECT nd::int[] FROM nd;
 
 \echo # TRANSACTION INTENTIONALLY LEFT OPEN!
 
