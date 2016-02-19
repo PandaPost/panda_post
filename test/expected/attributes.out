@@ -1,5 +1,4 @@
 \set ECHO none
-1..2
+1..1
 ok 1 - T([[1,2],[3,4]])
-# Looks like you planned 2 tests but ran 1
 # TRANSACTION INTENTIONALLY LEFT OPEN!

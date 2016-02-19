@@ -3,7 +3,7 @@
 \i test/pgxntool/setup.sql
 
 SELECT plan(
-  2 -- T
+  1 -- T
 );
 
 -- ediff1d
