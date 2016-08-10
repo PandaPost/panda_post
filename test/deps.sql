@@ -1,4 +1,5 @@
 -- Add any test dependency statements here
+SET search_path = public;
 CREATE EXTENSION IF NOT EXISTS plpythonu;
 CREATE EXTENSION IF NOT EXISTS lambda;
 CREATE EXTENSION PandaPost;

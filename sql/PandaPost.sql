@@ -139,8 +139,11 @@ CREATE FUNCTION pg_temp.cf(
   , extra_args text DEFAULT NULL
   , options text DEFAULT 'IMMUTABLE'
   , attribute boolean DEFAULT false
+  , pgname text DEFAULT NULL
 ) RETURNS void LANGUAGE plpgsql AS $cf_body$
 DECLARE
+  c_pgname CONSTANT text := coalesce(pgname,fname);
+
   template CONSTANT text := $template$
 /*
  * format() args:
@@ -198,7 +201,7 @@ BEGIN
 
   sql := format(
     template
-    , fname
+    , c_pgname
     , extra_args
     , options
 
@@ -222,6 +225,59 @@ SELECT pg_temp.cf(
   'T'
   , attribute := true
 );
+-- ndall, ndany
+/*
+SELECT pg_temp.cf(
+  fname
+  , format( $$
+  , axis int%s
+  , keepdims boolean=False
+$$
+    , array_str
+  )
+  , pgname := 'nd'||fname
+)
+  FROM unnest( '{any,all}'::text[] ) fname
+    CROSS JOIN unnest( array[ '=NULL', '[] = array[ NULL::int ]' ] ) array_str
+;
+*/
+CREATE FUNCTION ndall(
+  i ndarray
+  , axis int[]
+  , keepdims boolean=False
+) RETURNS ndarray IMMUTABLE LANGUAGE plpythonu
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+
+if len(axis)==1:
+  my_axis=axis[0]
+else:
+  my_axis=axis
+
+# Can't do keepdims=keepdims
+plpy.debug('my_axis={}, args={}'.format(my_axis, args))
+out=np.all(i, axis=my_axis, keepdims=args[2]).tolist()
+
+if type(out) == type(True): # Did we get just a single boolean?
+  plpy.notice('converting boolean to ndarray')
+  out = np.array([out])
+
+return out
+$body$;
+CREATE FUNCTION ndall(
+  i ndarray
+  , axis int
+  , keepdims boolean=False
+) RETURNS ndarray IMMUTABLE LANGUAGE sql AS $body$
+SELECT ndall(i, array[axis], keepdims)
+$body$;
+CREATE FUNCTION ndall(
+  i ndarray
+  , keepdims boolean=False
+) RETURNS ndarray LANGUAGE sql IMMUTABLE AS $$
+SELECT ndall(i, NULL::int, keepdims)
+$$;
 
 CREATE FUNCTION repr(
   i ndarray
