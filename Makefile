@@ -7,7 +7,7 @@ include pgxntool/base.mk
 lambda: $(DESTDIR)$(datadir)/extension/lambda.control
 
 $(DESTDIR)$(datadir)/extension/lambda.control:
-	pgxn install lambda
+	pgxn --verbose install lambda
 testdeps: lambda
 
 define get_numpy_include
