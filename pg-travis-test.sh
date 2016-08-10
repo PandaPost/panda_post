@@ -6,7 +6,7 @@ set -eux
 
 sudo apt-get update
 
-packages="python-setuptools postgresql-$PGVERSION postgresql-server-dev-$PGVERSION postgresql-common"
+packages="python-setuptools postgresql-$PGVERSION postgresql-server-dev-$PGVERSION postgresql-plpython-$PGVERSION postgresql-common"
 
 # bug: http://www.postgresql.org/message-id/20130508192711.GA9243@msgid.df7cb.de
 sudo update-alternatives --remove-all postmaster.1.gz
