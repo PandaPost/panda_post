@@ -8,7 +8,7 @@
     "X_comment": "All other keys must be defined by the specification. See http://pgxn.org/spec/#Structure",
     "X_comment": "Keys marked REQUIRED or Optional are what you'd expect. Keys marked Unusual are keys you don't normally need to use.",
     "X_comment": "The pgxntool Makefile will strip out empty keys to produce a working META.json, so it's fine to leave them here.",
-    "X_comment": "I've tried to put things in a logical order. Comments welcome at https://github.com/decibel/pgxntool/issues!",
+    "X_comment": "I've tried to put things in a logical order. Comments welcome at https://github.com/PandaPost/pgxntool/issues!",
 
     "X_comment": "REQUIRED. Name of distribution.",
     "name": "PandaPost",
@@ -54,13 +54,13 @@
 
     "X_comment": "Optional. \"resources\": Web resources available for this distribution. http://pgxn.org/spec/#resources",
     "resources": {
-        "homepage": "http://github.com/decibel/PandaPost",
+        "homepage": "http://github.com/PandaPost/PandaPost",
         "bugtracker": {
-            "web": "http://github.com/decibel/PandaPost/issues"
+            "web": "http://github.com/PandaPost/PandaPost/issues"
         },
         "repository": {
-            "url": "git://github.com/decibel/PandaPost.git",
-            "web": "http://github.com/decibel/PandaPost/",
+            "url": "git://github.com/PandaPost/PandaPost.git",
+            "web": "http://github.com/PandaPost/PandaPost/",
             "type": "git"
         }
     },
@@ -71,6 +71,8 @@
 
         "build": {
             "X_comment": "Valid keys are requires, recommends, suggests, or conflicts.",
+
+            "X_comment": "Currently doesn't compile on 9.4",
             "requires": {
                 "PostgreSQL": "9.5.0",
 
@@ -93,8 +95,11 @@
 
             "X_end": ""
         },
+
+        "X_comment": "lamda requires Postgres 9.4",
         "test": {
             "requires": {
+                "PostgreSQL": "9.4.0",
                 "pgtap": 0,
                 "lambda": 0,
 

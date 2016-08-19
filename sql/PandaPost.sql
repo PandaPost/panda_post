@@ -1,3 +1,11 @@
+/*
+ * If we create temporary objects but then don't explicitly drop them they end
+ * up as part of the extension, which means when they ultimately get dropped
+ * when the session ends the extension gets dropped as well. Just create an
+ * explicit temporary schema instead.
+ */
+CREATE SCHEMA "PandaPost Temp Schema";
+
 CREATE TYPE ndarray;
 
 SET client_min_messages = WARNING;
@@ -134,7 +142,7 @@ $body$;
  */
 SELECT create_cast(t) FROM unnest('{boolean,smallint,int,bigint,float,real,numeric,text}'::text[]) t;
 
-CREATE FUNCTION pg_temp.cf(
+CREATE FUNCTION "PandaPost Temp Schema".cf(
   fname text
   , extra_args text DEFAULT NULL
   , options text DEFAULT 'IMMUTABLE'
@@ -221,7 +229,7 @@ BEGIN
 END
 $cf_body$;
 
-SELECT pg_temp.cf(
+SELECT "PandaPost Temp Schema".cf(
   'T'
   , attribute := true
 );
@@ -307,7 +315,7 @@ import numpy as np
 return np.array(eval(i), copy=False)
 $body$;
 
-SELECT pg_temp.cf(
+SELECT "PandaPost Temp Schema".cf(
   'ediff1d'
   , $$
   , to_end ndarray = NULL
@@ -321,10 +329,10 @@ union1d(ar1, ar2)
 setdiff1d(ar1, ar2, assume_unique=False)
 */
 -- All of these also accept assume_unique, but it seems pointless to support that
-SELECT pg_temp.cf( u, ', ar2 ndarray' ) FROM unnest(
+SELECT "PandaPost Temp Schema".cf( u, ', ar2 ndarray' ) FROM unnest(
   '{intersect1d,setxor1d,union1d,setdiff1d}'::text[]
 ) u;
-SELECT pg_temp.cf(
+SELECT "PandaPost Temp Schema".cf(
   'in1d'
   , $$
   , ar2 ndarray
@@ -364,5 +372,14 @@ $body$;
 COMMENT ON FUNCTION ndunique1(
   ar ndarray
 ) IS $$Version of ndarray.unique() that returns just the nd array$$;
+
+-- Note that we can't use CASCADE or it will attempt to drop the extension that we're trying to create...
+DROP FUNCTION "PandaPost Temp Schema".cf(
+  fname text
+  , extra_args text --DEFAULT NULL
+  , options text --DEFAULT 'IMMUTABLE'
+  , attribute boolean --DEFAULT false
+);
+DROP SCHEMA "PandaPost Temp Schema";
 
 -- vi: expandtab ts=2 sw=2
