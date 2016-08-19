@@ -1,5 +1,3 @@
-EXTENSION = PandaPost
-
 include pgxntool/base.mk
 
 # Tests require the lambda extension
