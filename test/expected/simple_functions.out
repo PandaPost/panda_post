@@ -1,5 +1,9 @@
 \set ECHO none
-1..2
+1..6
 ok 1 - ndall('[[True, False], [False, False]]')
-ok 2 - ndall('[[True, False], [False, False]]', keepdims := true)
+ok 2 - ndall('[[True, False], [False, False]]', axis := 1)
+ok 3 - ndall('[[True, False], [False, False]]', keepdims := true)
+ok 4 - ndany('[[True, False], [False, False]]')
+ok 5 - ndany('[[True, False], [False, False]]', axis := 1)
+ok 6 - ndany('[[True, False], [False, False]]', keepdims := true)
 # TRANSACTION INTENTIONALLY LEFT OPEN!

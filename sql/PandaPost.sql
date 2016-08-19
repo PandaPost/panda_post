@@ -233,22 +233,10 @@ SELECT "PandaPost Temp Schema".cf(
   'T'
   , attribute := true
 );
--- ndall, ndany
+
 /*
-SELECT pg_temp.cf(
-  fname
-  , format( $$
-  , axis int%s
-  , keepdims boolean=False
-$$
-    , array_str
-  )
-  , pgname := 'nd'||fname
-)
-  FROM unnest( '{any,all}'::text[] ) fname
-    CROSS JOIN unnest( array[ '=NULL', '[] = array[ NULL::int ]' ] ) array_str
-;
-*/
+ * ndall, ndany
+ */
 CREATE FUNCTION ndall(
   i ndarray
   , axis int[]
@@ -265,13 +253,8 @@ else:
 
 # Can't do keepdims=keepdims
 plpy.debug('my_axis={}, args={}'.format(my_axis, args))
-#out=np.all(i, axis=my_axis, keepdims=args[2]).tolist()
 out=np.all(i, axis=my_axis, keepdims=args[2])
 plpy.debug('out={}'.format(repr(out)))
-
-if type(out) == type(True): # Did we get just a single boolean?
-  plpy.notice('converting boolean to ndarray')
-  out = np.array([out])
 
 return out
 $body$;
@@ -289,6 +272,44 @@ CREATE FUNCTION ndall(
 SELECT ndall(i, NULL::int, keepdims)
 $$;
 
+CREATE FUNCTION ndany(
+  i ndarray
+  , axis int[]
+  , keepdims boolean=False
+) RETURNS ndarray IMMUTABLE LANGUAGE plpythonu
+TRANSFORM FOR TYPE ndarray
+AS $body$
+import numpy as np
+
+if len(axis)==1:
+  my_axis=axis[0]
+else:
+  my_axis=axis
+
+# Can't do keepdims=keepdims
+plpy.debug('my_axis={}, args={}'.format(my_axis, args))
+out=np.any(i, axis=my_axis, keepdims=args[2])
+plpy.debug('out={}'.format(repr(out)))
+
+return out
+$body$;
+CREATE FUNCTION ndany(
+  i ndarray
+  , axis int
+  , keepdims boolean=False
+) RETURNS ndarray IMMUTABLE LANGUAGE sql AS $body$
+SELECT ndany(i, array[axis], keepdims)
+$body$;
+CREATE FUNCTION ndany(
+  i ndarray
+  , keepdims boolean=False
+) RETURNS ndarray LANGUAGE sql IMMUTABLE AS $$
+SELECT ndany(i, NULL::int, keepdims)
+$$;
+
+/*
+ * repr()
+ */
 CREATE FUNCTION repr(
   i ndarray
 ) RETURNS text LANGUAGE plpythonu STRICT IMMUTABLE
@@ -379,6 +400,7 @@ DROP FUNCTION "PandaPost Temp Schema".cf(
   , extra_args text --DEFAULT NULL
   , options text --DEFAULT 'IMMUTABLE'
   , attribute boolean --DEFAULT false
+  , pgname text --DEFAULT NULL
 );
 DROP SCHEMA "PandaPost Temp Schema";
 
