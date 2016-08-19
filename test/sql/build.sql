@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS plpythonu;
 
 -- Tuple-only because of multiple calls to functions
 \t
-\i sql/PandaPost.sql
+\i sql/panda_post.sql
 
 \echo # TRANSACTION INTENTIONALLY LEFT OPEN!
 

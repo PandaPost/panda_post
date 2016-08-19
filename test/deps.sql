@@ -2,7 +2,7 @@
 SET search_path = public;
 CREATE EXTENSION IF NOT EXISTS plpythonu;
 CREATE EXTENSION IF NOT EXISTS lambda;
-CREATE EXTENSION "PandaPost";
+CREATE EXTENSION panda_post;
 
 -- General test infrastructure (should maybe be in it's own file)
 CREATE FUNCTION pg_temp.test_value(

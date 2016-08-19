@@ -11,7 +11,7 @@
     "X_comment": "I've tried to put things in a logical order. Comments welcome at https://github.com/PandaPost/pgxntool/issues!",
 
     "X_comment": "REQUIRED. Name of distribution.",
-    "name": "PandaPost",
+    "name": "panda_post",
 
     "X_comment": "REQUIRED. Version of the distribution. http://pgxn.org/spec/#version",
     "version": "0.2.0",
@@ -33,9 +33,9 @@
 
     "X_comment": "REQUIRED. Specifies extensions contained in this distribution. Each key is the name of an extension. http://pgxn.org/spec/#provides",
     "provides": {
-        "PandaPost": {
+        "panda_post": {
             "X_comment": "REQUIRED. File containing extension.",
-            "file": "sql/PandaPost.sql",
+            "file": "sql/panda_post.sql",
 
             "X_comment": "REQUIRED. Version the extension is at.",
             "version": "0.2.0",
