@@ -14,7 +14,7 @@
     "name": "panda_post",
 
     "X_comment": "REQUIRED. Version of the distribution. http://pgxn.org/spec/#version",
-    "version": "0.2.0",
+    "version": "0.2.1",
 
     "X_comment": "REQUIRED. Short description of distribution.",
     "abstract": "Python NumPy ndarray data type for Postgres",
@@ -38,7 +38,7 @@
             "file": "sql/panda_post.sql",
 
             "X_comment": "REQUIRED. Version the extension is at.",
-            "version": "0.2.0",
+            "version": "0.2.1",
 
             "X_comment": "Optional: \"abstract\": Description of the extension.",
             "abstract": "Python NumPy ndarray data type for Postgres",
