@@ -257,7 +257,9 @@ else:
 
 # Can't do keepdims=keepdims
 plpy.debug('my_axis={}, args={}'.format(my_axis, args))
-out=np.all(i, axis=my_axis, keepdims=args[2]).tolist()
+#out=np.all(i, axis=my_axis, keepdims=args[2]).tolist()
+out=np.all(i, axis=my_axis, keepdims=args[2])
+plpy.debug('out={}'.format(repr(out)))
 
 if type(out) == type(True): # Did we get just a single boolean?
   plpy.notice('converting boolean to ndarray')

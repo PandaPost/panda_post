@@ -8,14 +8,15 @@ SELECT plan(
 
 -- all
 SELECT is(
-    ndall(eval('[[True, False], [False, False]]'::text))::boolean[]
-    , array[false]
+    ndall(eval('[[True, False], [False, False]]'::text))::boolean
+    , false
     , $$ndall('[[True, False], [False, False]]')$$
 );
+--SET client_min_messages=debug;
 SELECT is(
-    ndall(eval('[[True, False], [False, False]]'::text),keepdims:=true)::boolean[]
-    , array[false]
-    , $$ndall('[[True, False], [False, False]]')$$
+    str(ndall(eval('[[True, False], [False, False]]'::text),keepdims:=true))
+    , str(eval('[[False]]'))
+    , $$ndall('[[True, False], [False, False]]', keepdims := true)$$
 );
 
 
