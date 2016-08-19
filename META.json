@@ -28,7 +28,7 @@
     "release_status": "unstable",
 
     "X_comment": "REQUIRED. License(s) distribution is released under. http://pgxn.org/spec/#license",
-    "license": "BSD 2 Clause",
+    "license": "freebsd",
 
     "X_comment": "REQUIRED. Specifies extensions contained in this distribution. Each key is the name of an extension. http://pgxn.org/spec/#provides",
     "provides": {
@@ -66,47 +66,30 @@
     },
 
     "X_comment": "Optional. \"prereqs\": Prerequisits for the distribution. http://pgxn.org/spec/#prereqs",
+    "X_comment": "Currently doesn't compile on 9.4",
+    "X_comment": "test/lambda requires Postgres 9.4",
     "prereqs": {
-        "X_comment": "Valid keys are configure, build, runtime, or test.",
 
         "build": {
-            "X_comment": "Valid keys are requires, recommends, suggests, or conflicts.",
-
-            "X_comment": "Currently doesn't compile on 9.4",
             "requires": {
-                "PostgreSQL": "9.5.0",
-
-                "X_end": ""
-            },
-
-            "X_end": ""
+                "PostgreSQL": "9.5.0"
+            }
         },
         "runtime": {
             "requires": {
-                "plpgsql": 0,
-
-                "X_end": ""
+                "plpgsql": 0
             },
             "recommends": {
-                "lambda": 0,
-
-                "X_end":""
-            },
-
-            "X_end": ""
+                "lambda": 0
+            }
         },
 
-        "X_comment": "lamda requires Postgres 9.4",
         "test": {
             "requires": {
                 "PostgreSQL": "9.4.0",
                 "pgtap": 0,
-                "lambda": 0,
-
-                "X_end": ""
-            },
-
-            "X_end": ""
+                "lambda": 0
+            }
         }
     },
 
